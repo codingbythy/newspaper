@@ -7,7 +7,7 @@ load_dotenv()
 
 # Claude API
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
-CLAUDE_MODEL = "claude-sonnet-4-20250514"
+CLAUDE_MODEL = "claude-sonnet-4-5-20250929"
 MAX_WORDS_PER_ARTICLE = 2000
 
 # Email (optional fallback)
