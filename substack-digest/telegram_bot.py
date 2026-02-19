@@ -154,11 +154,39 @@ async def scheduled_digest(app: Application) -> None:
 # ---------------------------------------------------------------------------
 
 def create_bot_app() -> Application:
-    """Build and return the Telegram Application (not yet running)."""
+    """Build and return the Telegram Application (not yet running).
+
+    The APScheduler is started inside post_init so it has access to the
+    running event loop created by run_polling / run_webhook.
+    """
     if not TELEGRAM_BOT_TOKEN:
         raise RuntimeError("TELEGRAM_BOT_TOKEN is not set")
 
-    app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    scheduler = AsyncIOScheduler()
+
+    async def post_init(application: Application) -> None:
+        scheduler.add_job(
+            scheduled_digest,
+            trigger=CronTrigger(
+                day_of_week=WEEKLY_CRON_DAY,
+                hour=WEEKLY_CRON_HOUR,
+                minute=WEEKLY_CRON_MINUTE,
+                timezone="UTC",
+            ),
+            args=[application],
+            id="weekly_digest",
+            name="Weekly Substack Digest",
+            replace_existing=True,
+        )
+        scheduler.start()
+        logger.info("APScheduler started inside running event loop")
+
+    app = (
+        Application.builder()
+        .token(TELEGRAM_BOT_TOKEN)
+        .post_init(post_init)
+        .build()
+    )
 
     # Register command handlers
     app.add_handler(CommandHandler("start", cmd_start))
@@ -169,37 +197,14 @@ def create_bot_app() -> Application:
     return app
 
 
-def setup_scheduler(app: Application) -> AsyncIOScheduler:
-    """Configure APScheduler to send the weekly digest."""
-    scheduler = AsyncIOScheduler()
-    scheduler.add_job(
-        scheduled_digest,
-        trigger=CronTrigger(
-            day_of_week=WEEKLY_CRON_DAY,
-            hour=WEEKLY_CRON_HOUR,
-            minute=WEEKLY_CRON_MINUTE,
-            timezone="UTC",
-        ),
-        args=[app],
-        id="weekly_digest",
-        name="Weekly Substack Digest",
-        replace_existing=True,
-    )
-    return scheduler
-
-
 def run_polling(app: Application) -> None:
     """Run the bot in polling mode (local development)."""
-    scheduler = setup_scheduler(app)
-    scheduler.start()
     logger.info("Bot running in polling mode (scheduler active)")
     app.run_polling(drop_pending_updates=True)
 
 
 def run_webhook(app: Application, webhook_url: str, port: int = 8443) -> None:
     """Run the bot in webhook mode (production)."""
-    scheduler = setup_scheduler(app)
-    scheduler.start()
     logger.info("Bot running in webhook mode on port %d", port)
     app.run_webhook(
         listen="0.0.0.0",
