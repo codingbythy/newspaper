@@ -89,6 +89,36 @@ FEEDS = [
     {"url": "https://summerlightning.substack.com/feed", "name": "Summer Lightning", "category": "culture"},
     {"url": "https://unchartedterritories.substack.com/feed", "name": "Uncharted Territories", "category": "ideas"},
     {"url": "https://usefulfictions.substack.com/feed", "name": "Useful Fictions", "category": "culture"},
+
+    # --- New additions ---
+
+    # Crypto & Web3
+    {"url": "https://pomp.substack.com/feed", "name": "The Pomp Letter", "category": "crypto"},
+    {"url": "https://rektcapital.substack.com/feed", "name": "Rekt Capital", "category": "crypto"},
+    {"url": "https://thedailygwei.substack.com/feed", "name": "The Daily Gwei", "category": "crypto"},
+
+    # Finance & Markets
+    {"url": "https://doomberg.substack.com/feed", "name": "Doomberg", "category": "finance"},
+    {"url": "https://michaeljburry.substack.com/feed", "name": "Cassandra Unchained", "category": "finance"},
+    {"url": "https://netinterest.substack.com/feed", "name": "Net Interest", "category": "finance"},
+    {"url": "https://thebearcave.substack.com/feed", "name": "The Bear Cave", "category": "finance"},
+    {"url": "https://qualitycompounding.substack.com/feed", "name": "Compounding Quality", "category": "finance"},
+
+    # Tech & AI/VC
+    {"url": "https://newsletter.pragmaticengineer.com/feed", "name": "The Pragmatic Engineer", "category": "tech"},
+    {"url": "https://www.newcomer.co/feed", "name": "Newcomer", "category": "tech"},
+    {"url": "https://diff.substack.com/feed", "name": "The Diff", "category": "tech"},
+    {"url": "https://www.lennysnewsletter.com/feed", "name": "Lenny's Newsletter", "category": "tech"},
+
+    # Economics & Big Ideas
+    {"url": "https://adamtooze.substack.com/feed", "name": "Chartbook", "category": "ideas"},
+    {"url": "https://paulkrugman.substack.com/feed", "name": "Paul Krugman", "category": "economics"},
+    {"url": "https://theovershoot.co/feed", "name": "The Overshoot", "category": "economics"},
+    {"url": "https://geopoliticsunplugged.substack.com/feed", "name": "Geopolitics Unplugged", "category": "ideas"},
+
+    # Culture & Creativity
+    {"url": "https://haleynahman.substack.com/feed", "name": "Maybe Baby", "category": "culture"},
+    {"url": "https://1000wordsofsummer.substack.com/feed", "name": "Craft Talk", "category": "culture"},
 ]
 
 # Category groupings for the digest prompt
