@@ -1,0 +1,56 @@
+name: Weekly Substack Digest
+
+on:
+  schedule:
+    # Every Sunday at 8:00 AM UTC
+    - cron: "0 8 * * 0"
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Number of days to look back"
+        required: false
+        default: "7"
+
+jobs:
+  send-digest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r substack-digest/requirements.txt
+
+      - name: Send digest to Telegram
+        working-directory: substack-digest
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python -c "
+          import asyncio
+          from fetcher import fetch_all_feeds
+          from summarizer import generate_digest
+          from telegram_bot import create_bot_app, send_long_message
+
+          async def send():
+              days = int('${{ github.event.inputs.days || 7 }}')
+              articles = fetch_all_feeds(days=days)
+              if not articles:
+                  print('No articles found.')
+                  return
+              digest = generate_digest(articles, days=days)
+              app = create_bot_app()
+              async with app:
+                  await send_long_message(app.bot, '${{ secrets.TELEGRAM_CHAT_ID }}', digest)
+              print('Digest sent!')
+
+          asyncio.run(send())
+          "
