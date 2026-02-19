@@ -1,5 +1,6 @@
 """Telegram bot for delivering Substack digests."""
 
+import asyncio
 import logging
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -104,22 +105,24 @@ async def cmd_digest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     """Handle /digest — generate and send a full weekly digest."""
     await update.message.reply_text("⏳ Fetching articles and generating your digest… this may take a minute.")
     try:
-        digest = _build_digest(days=7)
+        loop = asyncio.get_running_loop()
+        digest = await loop.run_in_executor(None, _build_digest, 7)
         await send_long_message(update.message.bot, update.effective_chat.id, digest)
-    except Exception:
+    except Exception as exc:
         logger.exception("Error generating digest")
-        await update.message.reply_text("❌ Something went wrong generating the digest. Check the logs.")
+        await update.message.reply_text(f"❌ Something went wrong generating the digest.\n\n`{exc}`")
 
 
 async def cmd_today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Handle /today — quick summary of last 24 hours."""
     await update.message.reply_text("⏳ Checking what dropped in the last 24 hours…")
     try:
-        digest = _build_digest(days=1)
+        loop = asyncio.get_running_loop()
+        digest = await loop.run_in_executor(None, _build_digest, 1)
         await send_long_message(update.message.bot, update.effective_chat.id, digest)
-    except Exception:
+    except Exception as exc:
         logger.exception("Error generating today's summary")
-        await update.message.reply_text("❌ Something went wrong. Check the logs.")
+        await update.message.reply_text(f"❌ Something went wrong.\n\n`{exc}`")
 
 
 async def cmd_feeds(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
