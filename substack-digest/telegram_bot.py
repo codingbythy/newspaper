@@ -107,10 +107,10 @@ async def cmd_digest(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None
     try:
         loop = asyncio.get_running_loop()
         digest = await loop.run_in_executor(None, _build_digest, 7)
-        await send_long_message(context.bot, update.effective_chat.id, digest)
+        await send_long_message(context.bot, update.effective_chat.id, digest, parse_mode=ParseMode.HTML)
     except Exception as exc:
         logger.exception("Error generating digest")
-        await update.message.reply_text(f"❌ Something went wrong generating the digest.\n\n`{exc}`")
+        await update.message.reply_text(f"❌ Something went wrong generating the digest.\n\n{exc}")
 
 
 async def cmd_today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -119,10 +119,10 @@ async def cmd_today(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     try:
         loop = asyncio.get_running_loop()
         digest = await loop.run_in_executor(None, _build_digest, 1)
-        await send_long_message(context.bot, update.effective_chat.id, digest)
+        await send_long_message(context.bot, update.effective_chat.id, digest, parse_mode=ParseMode.HTML)
     except Exception as exc:
         logger.exception("Error generating today's summary")
-        await update.message.reply_text(f"❌ Something went wrong.\n\n`{exc}`")
+        await update.message.reply_text(f"❌ Something went wrong.\n\n{exc}")
 
 
 async def cmd_feeds(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -146,7 +146,7 @@ async def scheduled_digest(app: Application) -> None:
     logger.info("Running scheduled weekly digest…")
     try:
         digest = _build_digest(days=7)
-        await send_long_message(app.bot, TELEGRAM_CHAT_ID, digest)
+        await send_long_message(app.bot, TELEGRAM_CHAT_ID, digest, parse_mode=ParseMode.HTML)
         logger.info("Scheduled digest sent successfully")
     except Exception:
         logger.exception("Failed to send scheduled digest")

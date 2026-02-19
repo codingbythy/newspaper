@@ -10,41 +10,57 @@ logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """\
 You are a brilliant editorial assistant who synthesises newsletter content into \
-an insightful weekly digest. Your reader is a curious, busy professional who \
+an insightful digest. Your reader is a curious, busy professional who \
 subscribes to many Substack newsletters covering tech, finance, crypto, culture, \
 and ideas. They want signal, not noise.
 
-Write the digest in a clear, engaging tone. Use bullet points for quick scanning. \
-Attribute insights to their sources when relevant. Flag disagreements between sources.\
+CRITICAL FORMATTING RULES — you MUST follow these exactly:
+• Output is rendered in Telegram, which supports only a subset of HTML.
+• Allowed tags: <b>, <i>, <u>, <s>, <a href="...">, <code>, <pre>, <blockquote>.
+• Do NOT use <h1>–<h6>, <p>, <ul>, <li>, <br>, or any other HTML tags.
+• Use plain newlines for line breaks (NOT <br>).
+• Use "•" (bullet character) for list items, one per line.
+• Use <b> for section headers on their own line.
+• Escape these HTML entities in all text: & → &amp;  < → &lt;  > → &gt;
+• Do NOT wrap output in ```html or any code fence.\
 """
 
 USER_PROMPT_TEMPLATE = """\
 Below are articles from my Substack subscriptions published in the last {days} day(s). \
-Please produce my weekly digest with the following sections:
+Produce my digest using the exact format below. Replace the placeholder lines with real content.
 
-## 🌍 World Affairs Brief
-The 5-7 most important things I should know, synthesised across sources (not just \
-per-article summaries). Flag where sources disagree.
+🌍 <b>World Affairs</b>
 
-## 📈 Markets & Crypto Brief
-Key trends and insights from the finance/crypto newsletters.
+• [Synthesised insight across sources, not per-article summaries]
+• [Flag where sources disagree]
+• [5-7 bullets total]
 
-## 🤖 Tech & AI Brief
-Key developments from the tech-focused newsletters.
+📈 <b>Markets &amp; Crypto</b>
 
-## 🎭 Culture & Ideas
-Interesting ideas, contrarian takes, and things worth thinking about.
+• [Key trends and insights from finance/crypto newsletters]
 
-## 🤔 3 Weekly Reflection Questions
-Thought-provoking questions inspired by the week's themes, designed to help me \
-think critically and improve my life.
+🤖 <b>Tech &amp; AI</b>
 
-## 📚 Sources
-A list of every article referenced, formatted as: "Title" — Source (link)
+• [Key developments from the tech-focused newsletters]
+
+🎭 <b>Culture &amp; Ideas</b>
+
+• [Interesting ideas, contrarian takes, things worth thinking about]
+
+💡 <b>Reflection Questions</b>
+
+1. [Thought-provoking question inspired by this period's themes]
+2. [Another question]
+3. [Another question]
+
+📚 <b>Sources</b>
+
+• <a href="link">Title</a> — Source
+• [repeat for each article referenced]
 
 ---
 
-### Articles
+<b>Articles</b>
 
 {articles_text}
 """
